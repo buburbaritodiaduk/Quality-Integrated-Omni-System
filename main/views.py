@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Sum
+from main.forms import CustomUserCreationForm
 from .models import DailyRecord
 import json
 from decimal import Decimal
