@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - QIOS{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="auth-container">
+        <div class="auth-box">
+            <img src="{% static 'images/logo-qios.png' %}" alt="QIOS Logo" class="auth-logo">
+            <h2>Create Your Account</h2>
+            <p>Join QIOS and grow your business</p>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <p>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <ul class="helptext">
+                        {% for line in field.help_text.splitlines %}
+                            <li>{{ line }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </p>
+                {% endfor %}
+                <button type="submit" class="auth-btn">Register</button>
+            </form>
+            <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </div>
+{% endblock %}

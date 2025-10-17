@@ -1,0 +1,31 @@
+{% load static %}
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h1>QIOS <span class="header-retail">Retail</span></h1>
+    </div>
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="#"><i class="fas fa-box"></i> Stock</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Customers</a></li>
+        </ul>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="sidebar-section">
+            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        </div>
+        <div class="sidebar-section">
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
+        <div class="ad-placeholder">
+            <p>Place Your Ads Here!</p>
+        </div>
+        <div class="support-section">
+            <button class="support-btn">Get Support</button>
+            <small>Valid Until DD/MM/YYYY</small>
+        </div>
+    </div>
+</aside>
+</script>
