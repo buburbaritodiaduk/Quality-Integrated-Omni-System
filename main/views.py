@@ -13,6 +13,82 @@ from django.db.models.functions import Coalesce
 import uuid
 import midtransclient
 from django.conf import settings
+from django.utils import timezone
+from django.db.models import Sum
+from .models import DailyRecord
+from decimal import Decimal
+import calendar
+import json
+
+def get_ai_advice(current_revenue, mom_change):
+    if current_revenue == 0:
+        return "No data recorded for this month yet. Start adding your daily records to unlock powerful AI insights and predictions!"
+    
+    advice = ""
+    if mom_change > 20:
+        advice += "Fantastic! Your revenue is up significantly (over 20%) from last month. Keep up the momentum! Whatever you did last month, it's working."
+    elif mom_change > 0:
+        advice += f"Good progress. Your revenue is up {mom_change:.0f}% from last month. Keep pushing to grow your sales channels."
+    elif mom_change < -20:
+        advice += "Warning: Your revenue has dropped significantly (over 20%) this month. It's time to review your expenses, marketing strategy, or product offerings."
+    else:
+        advice += "Your revenue is stable, which is good. Now, let's look for new opportunities to grow. Consider running a promotion or engaging with customers on social media."
+    
+    return advice
+
+@login_required
+def analytics_view(request):
+    today = timezone.now().date()
+    first_day_current_month = today.replace(day=1)
+    
+    # === HITUNG DATA BULAN INI (TETAP SAMA) ===
+    current_month_data_qs = DailyRecord.objects.filter(date__gte=first_day_current_month)
+    current_revenue = current_month_data_qs.aggregate(total=Sum('income'))['total'] or Decimal('0.00')
+    # ... (Hitungan bulan lalu, MoM, prediksi, AI biarkan saja) ...
+    last_day_last_month = first_day_current_month - timezone.timedelta(days=1)
+    first_day_last_month = last_day_last_month.replace(day=1)
+    last_month_data = DailyRecord.objects.filter(date__range=[first_day_last_month, last_day_last_month])
+    last_month_revenue = last_month_data.aggregate(total=Sum('income'))['total'] or Decimal('0.00')
+    mom_change = 0
+    if last_month_revenue > 0: mom_change = ((current_revenue - last_month_revenue) / last_month_revenue) * 100
+    elif current_revenue > 0: mom_change = 100
+    days_in_month = calendar.monthrange(today.year, today.month)[1]
+    current_day_of_month = today.day
+    predicted_revenue = 0
+    if current_day_of_month > 0:
+        daily_avg = current_revenue / current_day_of_month
+        predicted_revenue = daily_avg * days_in_month
+    ai_advice = get_ai_advice(current_revenue, mom_change)
+
+    # === SIAPIN DATA BUAT CHART (BARU!) ===
+    # Ambil semua record bulan ini, diurutkan berdasarkan tanggal
+    chart_data = current_month_data_qs.order_by('date')
+    
+    # Siapin list kosong buat nampung data chart
+    chart_labels = [] # Buat tanggal (sumbu X)
+    chart_revenue_data = [] # Buat pemasukan (sumbu Y)
+    chart_expense_data = [] # Buat pengeluaran (sumbu Y)
+    
+    # Loop data harian dan masukin ke list
+    for record in chart_data:
+        chart_labels.append(record.date.strftime('%d %b')) # Format: "19 Oct"
+        chart_revenue_data.append(float(record.income)) # Chart.js butuh angka float
+        chart_expense_data.append(float(record.expense))
+
+    context = {
+        'current_revenue_formatted': f"Rp {current_revenue:,.2f}",
+        'mom_change': f"{mom_change:+.2f}",
+        'mom_change_value': mom_change,
+        'predicted_revenue_formatted': f"Rp {predicted_revenue:,.2f}",
+        'ai_advice': ai_advice,
+        
+        # Kirim data chart ke template (convert ke JSON biar aman dibaca JS)
+        'chart_labels': json.dumps(chart_labels),
+        'chart_revenue_data': json.dumps(chart_revenue_data),
+        'chart_expense_data': json.dumps(chart_expense_data),
+    }
+    
+    return render(request, 'main/analytics.html', context)
 
 @login_required
 def dashboard_view(request):
@@ -190,3 +266,4 @@ def create_payment_view(request):
             return JsonResponse({'status': 'error', 'message': f"Gagal membuat transaksi: {str(e)}"})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+

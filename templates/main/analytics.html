@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analytics - QIOS Retail{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+    {% include 'main/sidebar.html' %}
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h2>AI-Powered Analytics</h2>
+            </div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <span>{{ user.username }}</span>
+                    <img src="{% static 'images/logo-bisnis.png' %}" alt="Business Logo">
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+
+            <div class="card" style="grid-column: span 1;">
+                <p>Month-over-Month Revenue</p>
+                <h2 style="color: {% if mom_change_value < 0 %}#dc3545{% else %}#198754{% endif %};">
+                    {{ mom_change }}%
+                </h2>
+                <small>vs. Previous Month</small>
+            </div>
+
+            <div class="card" style="grid-column: span 1;">
+                <p>Full Month Revenue Prediction</p>
+                <h2>{{ predicted_revenue_formatted }}</h2>
+                <small>Based on current daily average</small>
+            </div>
+
+            <div class="card" style="grid-column: span 2; grid-row: span 1;">
+                <h4>QIOS AI Business Insights</h4>
+                <p style="font-size: 1.1rem; color: #333; margin-top: 15px; line-height: 1.6;">
+                    {{ ai_advice }}
+                </p>
+            </div>
+
+            <div class="card card-large" style="grid-column: span 2; height: 350px;"> <div class="card-header">
+                    <p>Revenue vs Expense</p>
+                    <span>This Month</span>
+                </div>
+                <canvas id="revenueExpenseChart"></canvas>
+            </div>
+
+        </div>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // === KODE BARU UNTUK CHART ===
+    const ctx = document.getElementById('revenueExpenseChart').getContext('2d');
+    
+    // Ambil data dari Django (yang udah di-JSON.stringify di views.py)
+    // Kita pake JSON.parse buat ngubah string JSON jadi array JavaScript asli
+    const chartLabels = JSON.parse('{{ chart_labels|safe }}');
+    const revenueData = JSON.parse('{{ chart_revenue_data|safe }}');
+    const expenseData = JSON.parse('{{ chart_expense_data|safe }}');
+
+    new Chart(ctx, {
+        type: 'line', // Bisa ganti 'bar' kalo mau grafik batang
+        data: {
+            labels: chartLabels, // Tanggal buat sumbu X
+            datasets: [
+                {
+                    label: 'Revenue (Income)',
+                    data: revenueData, // Data pemasukan
+                    borderColor: '#198754', // Warna ijo
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    tension: 0.1, // Bikin garis agak melengkung
+                    fill: true
+                },
+                {
+                    label: 'Expense',
+                    data: expenseData, // Data pengeluaran
+                    borderColor: '#dc3545', // Warna merah
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Biar tingginya nurut sama parent div
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        // Format angka di sumbu Y jadi "Rp ..."
+                        callback: function(value, index, values) {
+                            return 'Rp ' + value.toLocaleString('id-ID'); 
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+});
+</script>
+{% endblock %}

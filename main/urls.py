@@ -10,4 +10,6 @@ urlpatterns = [
     path('ajax/add_record/', views.add_record_view, name='add_record'),
     path('ajax/filter_dashboard/', views.filter_dashboard_view, name='filter_dashboard'),
     path('ajax/create_payment/', views.create_payment_view, name='create_payment'),
+    path('analytics/', views.analytics_view, name='analytics'),
+    
 ]
