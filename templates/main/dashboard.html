@@ -19,10 +19,12 @@
                     <i class="fas fa-calendar-alt"></i>
                 </div>
                 <button class="add-record-btn" id="add-record-btn"><i class="fas fa-plus"></i> Add Manual Data</button>
+                
+                <button class="add-record-btn" id="pay-button" style="background-color: #1a73e8;"><i class="fas fa-credit-card"></i> Pay (Demo)</button>
             </div>
             <div class="header-right">
                 <div class="user-profile">
-                    <span>{{ user.username }}</span>
+                    <span>{{ user.username|capfirst }}</span>
                     <img src="{% static 'images/logo-bisnis.png' %}" alt="Business Logo">
                 </div>
             </div>
@@ -96,6 +98,8 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // === KALENDER FILTER TANGGAL (KODE ASLI) ===
     const dateRangePicker = flatpickr("#date-range-picker", {
         mode: "range",
         dateFormat: "Y-m-d",
@@ -110,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // === FUNGSI UPDATE DASHBOARD (KODE ASLI) ===
     function updateDashboardData(startDate, endDate) {
         document.getElementById('total-orders').innerText = '...';
         document.getElementById('total-income').innerText = '...';
@@ -145,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error fetching filtered data:', error));
     }
 
+    // === MODAL "ADD RECORD" (KODE ASLI) ===
     const recordDatePicker = flatpickr("#record-date-picker", {
         dateFormat: "Y-m-d",
         altInput: true,
@@ -165,6 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // === SUBMIT "ADD RECORD" (KODE ASLI) ===
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(form);
@@ -189,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.status === 'success') {
                 window.location.href = window.location.pathname;
             } else {
-                alert('An error occurred: ' + result.message);
+                alert('An error occurred: '.concat(result.message));
             }
         })
         .catch(error => {
@@ -197,6 +204,59 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('An error occurred while saving the data.');
         });
     });
+
+    // === LOGIKA BARU UNTUK MIDTRANS ===
+    const payButton = document.getElementById('pay-button');
+    // Kita ambil CSRF token dari form 'add record' yang sudah ada di halaman
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
+
+    payButton.addEventListener('click', function() {
+        console.log("Pay button clicked. Requesting payment token...");
+        
+        // 1. Minta token ke server Django-mu
+        fetch("{% url 'create_payment' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken // Kirim CSRF token
+            },
+            body: JSON.stringify({}) // Kirim body kosong aja buat demo
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                console.log("Token received:", result.token);
+                
+                // 2. Kalo dapet token, panggil pop-up Midtrans
+                window.snap.pay(result.token, {
+                    onSuccess: function(result){
+                        alert("Pembayaran sukses!"); 
+                        console.log(result);
+                        // Kalo sukses, refresh halaman buat update data (misalnya)
+                        window.location.href = window.location.pathname;
+                    },
+                    onPending: function(result){
+                        alert("Pembayaran ditunda. Selesaikan di channel pembayaranmu."); 
+                        console.log(result);
+                    },
+                    onError: function(result){
+                        alert("Pembayaran gagal."); 
+                        console.log(result);
+                    },
+                    onClose: function(){
+                        console.log('User closed the popup without finishing payment.');
+                    }
+                });
+            } else {
+                alert('Gagal membuat transaksi: '.concat(result.message));
+            }
+        })
+        .catch(error => {
+            console.error('Error creating payment:', error);
+            alert('An error occurred while creating the payment.');
+        });
+    });
+
 });
 </script>
 {% endblock %}

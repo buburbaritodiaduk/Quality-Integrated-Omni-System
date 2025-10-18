@@ -10,6 +10,9 @@ import json
 from decimal import Decimal
 from datetime import datetime
 from django.db.models.functions import Coalesce
+import uuid
+import midtransclient
+from django.conf import settings
 
 @login_required
 def dashboard_view(request):
@@ -135,3 +138,55 @@ def filter_dashboard_view(request):
     }
     
     return JsonResponse(response_data)
+
+@login_required
+def create_payment_view(request):
+    if request.method == 'POST':
+        try:
+            # Buat instance Snap dengan Basic Auth
+            server_key = settings.MIDTRANS_SERVER_KEY
+            snap = midtransclient.Snap(
+                is_production=False,
+                server_key=server_key
+            )
+
+            # Buat ID Order yang unik
+            order_id = f"QIOS-{request.user.id}-{uuid.uuid4().hex[:6]}"
+            
+            # Ambil data dari frontend (contoh aja, misal bayar 50rb)
+            total_amount = 50000 
+
+            # Siapin parameter transaksi buat Midtrans
+            transaction_details = {
+                'order_id': order_id,
+                'gross_amount': total_amount
+            }
+            
+            # Siapin info customer
+            customer_details = {
+                'first_name': request.user.username,
+                'email': request.user.email
+            }
+
+            # Print untuk debugging
+            print("Using Server Key:", server_key)
+            print("Transaction Details:", transaction_details)
+            print("Customer Details:", customer_details)
+            
+            # Panggil API Midtrans buat bikin transaksi
+            transaction = snap.create_transaction({
+                "transaction_details": transaction_details,
+                "customer_details": customer_details
+            })
+            
+            # Ambil token yang dikasih Midtrans
+            payment_token = transaction['token']
+            
+            # Kirim token ini balik ke JavaScript
+            return JsonResponse({'status': 'success', 'token': payment_token})
+        
+        except Exception as e:
+            print("Midtrans Error:", str(e))  # Print error untuk debugging
+            return JsonResponse({'status': 'error', 'message': f"Gagal membuat transaksi: {str(e)}"})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})

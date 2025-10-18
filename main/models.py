@@ -7,7 +7,7 @@ class DailyRecord(models.Model):
     orders_count = models.PositiveIntegerField(default=0)
 
     class Meta:
-        ordering = ['-date'] # Urutkan dari yang terbaru
-
+        ordering = ['-date'] 
+        
     def __str__(self):
         return f"Record for {self.date}"
