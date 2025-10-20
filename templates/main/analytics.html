@@ -26,22 +26,22 @@
         <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
 
             <div class="card" style="grid-column: span 1;">
-                <p>Month-over-Month Revenue</p>
+                <p>Penghasilan Bulan-ke-bulan</p>
                 <h2 style="color: {% if mom_change_value < 0 %}#dc3545{% else %}#198754{% endif %};">
                     {{ mom_change }}%
                 </h2>
-                <small>vs. Previous Month</small>
+                <small>vs. Bulan Sebelumnya</small>
             </div>
 
             <div class="card" style="grid-column: span 1;">
-                <p>Full Month Revenue Prediction</p>
+                <p>Prediksi Penghasilan Bulan Ini</p>
                 <h2>{{ predicted_revenue_formatted }}</h2>
-                <small>Based on current daily average</small>
+                <small>Berdasarkan rata-rata harian</small>
             </div>
 
             <div class="card" style="grid-column: span 2; grid-row: span 1;">
-                <h4>QIOS AI Business Insights</h4>
-                <p style="font-size: 1.1rem; color: #333; margin-top: 15px; line-height: 1.6;">
+                <h4>Wawasan Bisnis QIOS AI</h4>
+                <p style="font-size: 1rem; color: #000000; margin-top: 15px; line-height: 1.6;">
                     {{ ai_advice }}
                 </p>
             </div>

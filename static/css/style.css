@@ -1,10 +1,10 @@
 :root {
-    --bg-color: #f0f2f5;
+    --bg-color: #eaeaea;
     --sidebar-bg: #ffffff;
     --card-bg: #ffffff;
     --text-primary: #1c1c1c;
     --text-secondary: #6c757d;
-    --accent-color: #dc3545;
+    --accent-color: #dc3514;
     --border-color: #e9ecef;
 }
 
@@ -15,10 +15,16 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Montserrat';
+    letter-spacing: -1px;
     background-color: var(--bg-color);
     color: var(--text-primary);
     display: flex;
+}
+
+.card, .date-picker {
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .main-container {
@@ -27,7 +33,7 @@ body {
 }
 
 .sidebar {
-    width: 260px;
+    width: 250px;
     background-color: var(--sidebar-bg);
     display: flex;
     flex-direction: column;
@@ -38,16 +44,24 @@ body {
 }
 
 .sidebar-header h1 {
+    font-style: italic;
+    letter-spacing: -2px;
+    margin-top: 20px;
+    margin-left: 40px; 
+    color: var( --accent-color);
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 700; 
 }
 
 .sidebar-header .header-retail {
-    font-weight: 400;
+    font-style: normal;
+    color: #008000;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 .sidebar-nav {
-    margin-top: 40px;
+    margin-top: 30px;
     flex-grow: 1;
 }
 
@@ -64,9 +78,9 @@ body {
     color: var(--text-secondary);
     font-size: 1rem;
     display: block;
-    padding: 12px 15px;
-    border-radius: 8px;
-    transition: background-color 0.3s, color 0.3s;
+    padding: 10px 30px;
+    border-radius: 20px;
+    transition: background-color 0.25s, color 0.25s;
 }
 
 .sidebar-nav a i {
@@ -82,7 +96,7 @@ body {
 }
 
 .sidebar-footer {
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .sidebar-footer .sidebar-section a {
@@ -98,8 +112,8 @@ body {
 
 .ad-placeholder {
     height: 150px;
-    background-color: #e9ecef;
-    border-radius: 8px;
+    width: 200px;
+    background-color: var(--bg-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -109,15 +123,15 @@ body {
 
 .support-btn {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background-color: var(--accent-color);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
+    border-radius: 20px;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1rem;
     cursor: pointer;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .sidebar-footer small {
@@ -128,15 +142,16 @@ body {
 
 .main-content {
     flex-grow: 1;
-    margin-left: 260px;
-    padding: 24px;
+    margin-left: 270px;
+    margin-right: 20px;
+    padding: 40px;
 }
 
 .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 30px;
 }
 
 .header-left h2 {
@@ -152,8 +167,8 @@ body {
     display: flex;
     align-items: center;
     background-color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
+    padding: 4px 15px;
+    border-radius: 20px;
     border: 1px solid var(--border-color);
     cursor: pointer;
 }
@@ -161,8 +176,7 @@ body {
 .date-picker input {
     border: none;
     outline: none;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     background-color: transparent;
 }
 
@@ -173,7 +187,7 @@ body {
 
 
 .header-right i {
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin: 0 10px;
     cursor: pointer;
 }
@@ -196,28 +210,33 @@ body {
 .card {
     background-color: var(--card-bg);
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.02);
     border: 1px solid var(--border-color);
 }
 
 .card p {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 1rem;
+    padding: 5px;
 }
 
 .card h2 {
-    font-size: 2.2rem;
-    margin: 5px 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 4px 0;
+    padding: 5px;
 }
 
 .card small {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    padding: 5px;
 }
 
 .card-large {
     grid-column: span 2;
     grid-row: span 2;
+    padding: 20px;
 }
 
 #sales-chart, #customer-order, #user-activity {
@@ -314,16 +333,16 @@ body {
 }
 
 .add-record-btn {
+    width: 180px; 
     background-color: var(--accent-color);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
+    padding: 5px 20px;
+    border-radius: 5px;
+    font-size: 0.75 rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.25s;
     margin-left: 20px;
 }
 .add-record-btn:hover {

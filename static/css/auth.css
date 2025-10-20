@@ -1,5 +1,5 @@
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -64,7 +64,7 @@ form input {
 .auth-btn {
     width: 100%;
     padding: 12px;
-    background-color: #dc3545;
+    background-color: #dc3514;
     color: white;
     border: none;
     border-radius: 8px;
@@ -81,7 +81,7 @@ form input {
 }
 
 .auth-switch a {
-    color: #dc3545;
+    color: #dc3514;
     text-decoration: none;
     font-weight: 500;
 }
@@ -115,6 +115,6 @@ form .errorlist {
     margin-top: 8px;
     font-size: 0.85rem;
     font-weight: 500;
-    color: #dc3545;
+    color: #dc3514;
     text-align: left;
 }
